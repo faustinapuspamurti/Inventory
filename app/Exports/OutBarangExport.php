@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Exports;
+
+use App\Models\Barang_keluar;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Maatwebsite\Excel\Concerns\WithTitle;
+
+class OutBarangExport implements FromCollection, WithHeadings, WithStyles, ShouldAutoSize, WithTitle
+{
+    public function collection()
+    {
+        return Barang_keluar::select('tanggal_keluar', 'lokawisata_id', 'barang_id', 'jumlah_keluar', 'harga', 'keterangan')->get();
+    }
+
+    public function headings(): array
+    {
+        return [
+            'Tanggal Keluar',
+            'ID Lokawisata',
+            'ID Barang',
+            'Jumlah Keluar',
+            'Harga',
+            'Keterangan'
+        ];
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+        $sheet->getStyle('A1:F1')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'color' => ['rgb' => 'FFFFFF'],
+                'size' => 12,
+            ],
+            'fill' => [
+                'fillType' => 'solid',
+                'color' => ['rgb' => '4F81BD'],
+            ],
+            'alignment' => [
+                'horizontal' => 'center',
+                'vertical' => 'center',
+            ],
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => 'thin',
+                    'color' => ['rgb' => '000000'],
+                ],
+            ],
+        ]);
+
+        $lastRow = $sheet->getHighestRow();
+        $sheet->getStyle("A2:D{$lastRow}")->applyFromArray([
+            'alignment' => [
+                'horizontal' => 'center',
+                'vertical' => 'center',
+                'wrapText' => true, 
+            ],
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => 'thin',
+                    'color' => ['rgb' => '000000'],
+                ],
+            ],
+        ]);
+
+        for ($row = 1; $row <= $lastRow; $row++) {
+            $sheet->getRowDimension($row)->setRowHeight(20);
+        }
+        return [];
+    }
+
+    public function title(): string
+    {
+        return 'Data Stok Barang';
+    }
+}

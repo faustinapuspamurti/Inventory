@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] { 
+  display: none !important; 
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.bg-primary {
+  background-color: #6795f1;
+}
+
+.bg-secondary {
+  background-color: #c4d3f0;
+}
+
+.text-primary {
+  color: #6795f1;
+}
+
+.hamburger-line {
+  @apply w-[30px] h-[2px] my-2 block bg-black;
+}
+
+.hamburger-active > span:nth-child(1) {
+  @apply rotate-45;
+}
+
+.hamburger-active > span:nth-child(2) {
+  @apply scale-0;
+}
+.hamburger-active > span:nth-child(3) {
+  @apply -rotate-45;
+}
+
+.card {
+  @apply bg-white my-6 mx-auto text-gray-700 w-[350px] min-h-[10rem] shadow-lg rounded-md overflow-hidden;
+}
+
+.parent {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+grid-template-rows: repeat(2, 1fr);
+grid-column-gap: 15px;
+grid-row-gap: 20px;
+}
+
