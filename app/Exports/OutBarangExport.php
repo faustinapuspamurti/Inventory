@@ -14,24 +14,37 @@ class OutBarangExport implements FromCollection, WithHeadings, WithStyles, Shoul
 {
     public function collection()
     {
-        return Barang_keluar::select('tanggal_keluar', 'lokawisata_id', 'barang_id', 'jumlah_keluar', 'harga', 'keterangan')->get();
+        return Barang_keluar::with(['lokawisata', 'barang'])
+        ->get()
+        ->map(function($item){
+            return [
+                'tanggal_keluar' => $item->tanggal_keluar,
+                'lokawisata' => $item->lokawisata->nama_lokawisata ?? '-',  
+                'barang' => $item->barang->nama_barang ?? '-',          
+                'jumlah_keluar' => $item->jumlah_keluar,
+                'harga_satuan' => $item->harga_satuan,
+                'harga_total' => $item->harga_total,
+                'keterangan' => $item->keterangan,
+            ];
+        });
     }
 
     public function headings(): array
     {
         return [
             'Tanggal Keluar',
-            'ID Lokawisata',
-            'ID Barang',
+            'Lokawisata',
+            'Nama Barang',
             'Jumlah Keluar',
-            'Harga',
+            'Harga Satuan',
+            'Harga Total',
             'Keterangan'
         ];
     }
 
     public function styles(Worksheet $sheet)
     {
-        $sheet->getStyle('A1:F1')->applyFromArray([
+        $sheet->getStyle('A1:G1')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'color' => ['rgb' => 'FFFFFF'],
@@ -54,7 +67,7 @@ class OutBarangExport implements FromCollection, WithHeadings, WithStyles, Shoul
         ]);
 
         $lastRow = $sheet->getHighestRow();
-        $sheet->getStyle("A2:D{$lastRow}")->applyFromArray([
+        $sheet->getStyle("A2:G{$lastRow}")->applyFromArray([
             'alignment' => [
                 'horizontal' => 'center',
                 'vertical' => 'center',

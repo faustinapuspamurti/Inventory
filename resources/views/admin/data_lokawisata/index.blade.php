@@ -43,7 +43,6 @@
                         </form>
                     </div>
 
-                    <!-- Rekapan Barang Keluar -->
                     <div class="border-t border-gray-200 mt-4 pt-3">
                         <h3 class="text-sm font-semibold text-gray-700 mb-2">📦 Rekapan Barang Keluar</h3>
                         <div class="overflow-x-auto">
@@ -88,7 +87,7 @@
             @endforelse
         </div>
 
-        <div x-show="openAdd" x-transition.opacity class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div x-show="openAdd" x-cloak x-transition.opacity class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div @click.away="openAdd = false" class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Tambah Lokawisata</h2>
                 <form action="{{ route('lokawisata.store') }}" method="POST">
@@ -120,8 +119,7 @@
             </div>
         </div>
 
-        <!-- Modal Edit -->
-        <div x-show="openEdit" x-transition.opacity class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div x-show="openEdit" x-cloak x-transition.opacity class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div @click.away="openEdit = false" class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Edit Lokawisata</h2>
                 <form :action="'/admin/lokawisata/' + editData.id" method="POST">
@@ -178,7 +176,6 @@
                 });
             });
 
-            // SweetAlert session feedback
             @if (session('success'))
                 Swal.fire({
                     title: "Berhasil!",

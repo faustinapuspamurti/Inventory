@@ -4,7 +4,6 @@
     <main class="p-6 bg-gray-50 min-h-screen flex-1" x-data="{ openAdd: false, openEdit: false, editData: {} }">
 
         <div class="bg-white shadow-lg rounded-2xl overflow-hidden">
-            <!-- Header Card -->
             <div
                 class="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-600 to-blue-500">
                 <h4 class="text-lg font-semibold text-white">📥 Daftar Barang Masuk</h4>
@@ -29,13 +28,11 @@
                     📑 Export Excel
                 </button>
             </div>
-            <!-- Filter dan Pencarian -->
             <div
                 style="display:flex; justify-content:space-between; align-items:center; padding:12px 24px; background-color:#F8FEFE; border-bottom:1px solid #A1E3F9;">
                 <form action="{{ route('barang_masuk.index') }}" method="GET"
                     style="display:flex; justify-content:space-between; align-items:center; flex-wrap:nowrap; width:100%; gap:12px;">
 
-                    <!-- Bagian kiri: Filter tanggal -->
                     <div style="display:flex; align-items:center; gap:10px;">
                         <div style="display:flex; align-items:center; gap:6px;">
                             <span style="font-size:13px; color:#6B7280;">Dari</span>
@@ -128,7 +125,6 @@
             </div>
         </div>
 
-        <!-- Floating Button Tambah Barang -->
         <button @click="openAdd = true"
             style="
       position:fixed;
@@ -150,8 +146,7 @@
             +
         </button>
 
-        <!-- Modal Tambah -->
-        <div x-show="openAdd" x-transition.opacity
+        <div x-show="openAdd" x-cloak x-transition.opacity
             class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
             <div @click.away="openAdd = false"
                 class="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 transform transition-all scale-100">
@@ -194,8 +189,7 @@
             </div>
         </div>
 
-        <!-- Modal Edit -->
-        <div x-show="openEdit" x-transition.opacity
+        <div x-show="openEdit" x-cloak x-transition.opacity
             class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
             <div @click.away="openEdit = false"
                 class="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 transform transition-all scale-100">
@@ -239,7 +233,6 @@
         </div>
     </main>
 
-    <!-- SweetAlert Hapus -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

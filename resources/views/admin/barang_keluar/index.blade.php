@@ -129,7 +129,7 @@
             +
         </button>
 
-        <div x-show="openAdd" x-transition.opacity
+        <div x-show="openAdd" x-cloak x-transition.opacity
             class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
             <div @click.away="openAdd = false"
                 class="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 transform transition-all scale-100">

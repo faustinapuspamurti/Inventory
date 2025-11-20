@@ -14,7 +14,7 @@ class StokBarangExport implements FromCollection, WithHeadings ,WithStyles, Shou
 {
     public function collection()
     {
-        return Barang::select('id', 'nama_barang', 'jumlah_stok', 'deskripsi')->get();
+        return Barang::select('id', 'nama_barang', 'jumlah_stok', 'satuan', 'harga_satuan', 'harga_total', 'deskripsi')->get();
     }
 
     public function headings(): array
@@ -23,13 +23,16 @@ class StokBarangExport implements FromCollection, WithHeadings ,WithStyles, Shou
             'ID',
             'Nama Barang',
             'Jumlah',
+            'Satuan',
+            'harga Satuan',
+            'harga Total',
             'Keterangan'
         ];
     }
 
     public function styles(Worksheet $sheet)
     {
-        $sheet->getStyle('A1:D1')->applyFromArray([
+        $sheet->getStyle('A1:G1')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'color' => ['rgb' => 'FFFFFF'],
@@ -52,7 +55,7 @@ class StokBarangExport implements FromCollection, WithHeadings ,WithStyles, Shou
         ]);
 
         $lastRow = $sheet->getHighestRow();
-        $sheet->getStyle("A2:D{$lastRow}")->applyFromArray([
+        $sheet->getStyle("A2:G{$lastRow}")->applyFromArray([
             'alignment' => [
                 'horizontal' => 'center',
                 'vertical' => 'center',

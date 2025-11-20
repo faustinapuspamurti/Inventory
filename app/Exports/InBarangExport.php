@@ -14,24 +14,31 @@ class InBarangExport implements FromCollection, WithHeadings, WithStyles, Should
 {
     public function collection()
     {
-        return Barang_masuk::select('barang_id', 'jumlah_masuk', 'tanggal_masuk', 'harga', 'deskripsi', 'created_at')->get();
+        return Barang_masuk::with('barang')
+        ->get()
+        ->map(function($item){
+            return [
+                'barang' => $item->barang->nama_barang ?? '-',
+                'jumlah_masuk' => $item->jumlah_masuk,
+                'tanggal_masuk' => $item->tanggal_masuk,
+                'deskripsi' => $item->deskripsi,
+            ];
+        });
     }
 
     public function headings(): array
     {
         return [
-            'ID Barang',
+            'Nama Barang',
             'Jumlah Masuk',
-            'Tanggal Masuk',
-            'Harga',
+            'Tanggal Masuk',  
             'Keterangan',
-            'Dibuat Pada'
         ];
     }
 
     public function styles(Worksheet $sheet)
     {
-        $sheet->getStyle('A1:F1')->applyFromArray([
+        $sheet->getStyle('A1:D1')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'color' => ['rgb' => 'FFFFFF'],

@@ -110,8 +110,7 @@
                                         <span class="text-red-600 font-semibold">❌ Ditolak</span>
                                     </div>
 
-                                    <!-- Modal Approve -->
-                                    <div x-show="openModal" x-transition.opacity
+                                    <div x-show="openModal" x-transition.opacity x-cloak
                                         class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                                         <div @click.away="openModal = false"
                                             class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
