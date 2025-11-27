@@ -27,46 +27,47 @@
 
             <!-- Table -->
             <div class="overflow-x-auto">
-                <table class="w-full border-collapse text-left">
-                    <thead>
-                        <tr class="bg-blue-100 text-gray-800">
-                            <th class="p-4 text-sm font-semibold">No</th>
-                            <th class="p-4 text-sm font-semibold">Nama Barang</th>
-                            <th class="p-4 text-sm font-semibold">Jumlah</th>
-                            <th class="p-4 text-sm font-semibold">Deskripsi</th>
-                            <th class="p-4 text-sm font-semibold text-center">Aksi</th>
-                        </tr>
-                    </thead>
-
-                    <tbody class="text-gray-700">
-                        @forelse ($stoks as $st)
-                            <tr class="border-b border-gray-100 hover:bg-blue-50 transition">
-                                <td class="p-4 font-semibold text-gray-700">{{ $loop->iteration }}</td>
-                                <td class="p-4">{{ $st->nama_barang }}</td>
-                                <td class="p-4">{{ $st->jumlah_stok }}</td>
-                                <td class="p-4">{{ $st->deskripsi }}</td>
-                                <td class="p-4 text-center">
-                                    @if ($st->jumlah_stok > 0)
-                                        <button @click="openReq = true; editData = {{ json_encode($st) }}"
-                                            class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm font-medium shadow-sm transition">
-                                            Request
-                                        </button>
-                                    @else
-                                        <span
-                                            class="bg-gray-400 text-white px-3 py-1 rounded-lg text-sm font-medium cursor-not-allowed shadow-sm">
-                                            Habis
-                                        </span>
-                                    @endif
-                                </td>
+                <div style="max-height: 70vh; overflow-y: auto;" class="rounded-b-xl">
+                    <table class="w-full border-collapse text-left">
+                        <thead>
+                            <tr class="bg-blue-100 text-gray-800">
+                                <th class="p-4 text-sm font-semibold">No</th>
+                                <th class="p-4 text-sm font-semibold">Nama Barang</th>
+                                <th class="p-4 text-sm font-semibold">Jumlah</th>
+                                <th class="p-4 text-sm font-semibold">Deskripsi</th>
+                                <th class="p-4 text-sm font-semibold text-center">Aksi</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="p-4 text-center text-gray-500">Tidak ada data stok.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
+                        </thead>
 
-                </table>
+                        <tbody class="text-gray-700">
+                            @forelse ($stoks as $st)
+                                <tr class="border-b border-gray-100 hover:bg-blue-50 transition">
+                                    <td class="p-4 font-semibold text-gray-700">{{ $loop->iteration }}</td>
+                                    <td class="p-4">{{ $st->nama_barang }}</td>
+                                    <td class="p-4">{{ $st->jumlah_stok }}</td>
+                                    <td class="p-4">{{ $st->deskripsi }}</td>
+                                    <td class="p-4 text-center">
+                                        @if ($st->jumlah_stok > 0)
+                                            <button @click="openReq = true; editData = {{ json_encode($st) }}"
+                                                class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm font-medium shadow-sm transition">
+                                                Request
+                                            </button>
+                                        @else
+                                            <span
+                                                class="bg-gray-400 text-white px-3 py-1 rounded-lg text-sm font-medium cursor-not-allowed shadow-sm">
+                                                Habis
+                                            </span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="p-4 text-center text-gray-500">Tidak ada data stok.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 

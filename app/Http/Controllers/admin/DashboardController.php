@@ -16,14 +16,12 @@ class DashboardController extends Controller
     {
         $today = Carbon::today();
 
-        // Ambil stok per bulan
         $stokPerBulanRaw = Barang::selectRaw('MONTH(created_at) as bulan, SUM(jumlah_stok) as total_stok')
             ->whereYear('created_at', now()->year)
             ->groupBy('bulan')
             ->orderBy('bulan')
             ->get();
 
-        // Buat array bulan lengkap
         $allMonths = [
             'Jan'=>0,'Feb'=>0,'Mar'=>0,'Apr'=>0,'Mei'=>0,'Jun'=>0,
             'Jul'=>0,'Agu'=>0,'Sep'=>0,'Okt'=>0,'Nov'=>0,'Des'=>0
@@ -37,10 +35,8 @@ class DashboardController extends Controller
         $labelBulan = array_keys($allMonths);
         $dataBulanChart = array_values($allMonths);
 
-        // Hari Senin-Minggu
         $weekDays = ['Mon'=>'Senin','Tue'=>'Selasa','Wed'=>'Rabu','Thu'=>'Kamis','Fri'=>'Jumat','Sat'=>'Sabtu','Sun'=>'Minggu'];
 
-        // Barang Masuk 7 hari terakhir
         $barangMasukRaw = Barang_masuk::selectRaw('DATE(created_at) as tanggal, SUM(jumlah_masuk) as total')
             ->where('created_at', '>=', now()->startOfWeek()) // mulai Senin
             ->groupBy('tanggal')
@@ -48,7 +44,6 @@ class DashboardController extends Controller
             ->pluck('total', 'tanggal')
             ->toArray();
 
-        // Inisialisasi array Senin-Minggu
         $dataHarianMasuk = [];
         $labelHarianMasuk = [];
         foreach($weekDays as $key=>$day){
@@ -67,7 +62,6 @@ class DashboardController extends Controller
             }
         }
 
-        // Barang Keluar
         $barangKeluarRaw = Barang_keluar::selectRaw('DATE(created_at) as tanggal, SUM(jumlah_keluar) as total')
             ->where('created_at', '>=', now()->startOfWeek())
             ->groupBy('tanggal')
@@ -93,7 +87,6 @@ class DashboardController extends Controller
             }
         }
 
-        // Notifikasi pending
         $jumlahNotifikasi = Notifikasi::where('status', 'pending')->count();
 
         return view('admin.dashboard', compact(

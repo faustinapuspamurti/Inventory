@@ -16,7 +16,7 @@ return new class extends Migration
         $table->foreignId('barang_id')->constrained('barang')->onDelete('cascade');
         $table->date('tanggal_keluar');
         $table->integer('jumlah_keluar');
-        $table->string('harga_satuan')->constrained('barang')->onDelete('cascade');
+        $table->foreignId('harga_satuan')->constrained('barang')->onDelete('cascade');
         $table->string('harga_total');
         $table->foreignId('lokawisata_id')->constrained('lokawisata')->onDelete('cascade');
         $table->text('keterangan')->nullable();

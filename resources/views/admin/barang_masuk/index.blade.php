@@ -65,63 +65,64 @@
                 </form>
             </div>
 
-
             <div class="overflow-x-auto">
-                <table class="w-full border-collapse text-left">
-                    <thead>
-                        <tr class="bg-blue-100 text-gray-800">
-                            <th class="p-4 text-sm font-semibold">No</th>
-                            <th class="p-4 text-sm font-semibold">Tanggal</th>
-                            <th class="p-4 text-sm font-semibold">Nama Barang</th>
-                            <th class="p-4 text-sm font-semibold">Jumlah</th>
-                            <th class="p-4 text-sm font-semibold">Deskripsi</th>
-                            <th class="p-4 text-sm font-semibold text-center">Aksi</th>
-                        </tr>
-                    </thead>
+                <div style="max-height: 70vh; overflow-y: auto;" class="rounded-b-xl">
+                    <table class="w-full border-collapse text-left">
+                        <thead>
+                            <tr class="bg-blue-100 text-gray-800">
+                                <th class="p-4 text-sm font-semibold">No</th>
+                                <th class="p-4 text-sm font-semibold">Tanggal</th>
+                                <th class="p-4 text-sm font-semibold">Nama Barang</th>
+                                <th class="p-4 text-sm font-semibold">Jumlah</th>
+                                <th class="p-4 text-sm font-semibold">Deskripsi</th>
+                                <th class="p-4 text-sm font-semibold text-center">Aksi</th>
+                            </tr>
+                        </thead>
 
-                    <tbody class="text-gray-700">
-                        @forelse ($barangMasuk as $bm)
-                            <tr
-                                class="@if ($loop->even) bg-gray-50 @else bg-white @endif border-b border-gray-100 hover:bg-blue-50 transition">
-                                <td class="p-4 font-semibold text-gray-700">{{ $loop->iteration }}</td>
-                                <td class="p-4">{{ \Carbon\Carbon::parse($bm->tanggal_masuk)->format('d-m-Y') }}</td>
-                                <td class="p-4">{{ $bm->barang->nama_barang }}</td>
-                                <td class="p-4">{{ $bm->jumlah_masuk }}</td>
-                                <td class="p-4">{{ $bm->deskripsi }}</td>
-                                <td class="p-4 text-center">
-                                    <button
-                                        @click="
-                    openEdit = true; 
-                    editData = {
-                      id: {{ $bm->id }},
-                      barang_id: {{ $bm->barang_id }},
-                      tanggal_masuk: '{{ $bm->tanggal_masuk }}',
-                      jumlah_masuk: {{ $bm->jumlah_masuk }},
-                      deskripsi: '{{ $bm->deskripsi }}',
-                      nama_barang: '{{ $bm->barang->nama_barang }}',
-                    }"
-                                        class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm font-medium shadow-sm transition">
-                                        Edit
-                                    </button>
-
-                                    <form id="delete-form-{{ $bm->id }}" method="POST"
-                                        action="{{ route('barang_masuk.destroy', $bm->id) }}" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" data-id="{{ $bm->id }}"
-                                            class="delete-button bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm font-medium shadow-sm transition">
-                                            Hapus
+                        <tbody class="text-gray-700">
+                            @forelse ($barangMasuk as $bm)
+                                <tr
+                                    class="@if ($loop->even) bg-gray-50 @else bg-white @endif border-b border-gray-100 hover:bg-blue-50 transition">
+                                    <td class="p-4 font-semibold text-gray-700">{{ $loop->iteration }}</td>
+                                    <td class="p-4">{{ \Carbon\Carbon::parse($bm->tanggal_masuk)->format('d-m-Y') }}</td>
+                                    <td class="p-4">{{ $bm->barang->nama_barang }}</td>
+                                    <td class="p-4">{{ $bm->jumlah_masuk }}</td>
+                                    <td class="p-4">{{ $bm->deskripsi }}</td>
+                                    <td class="p-4 text-center">
+                                        <button
+                                            @click="
+                        openEdit = true; 
+                        editData = {
+                        id: {{ $bm->id }},
+                        barang_id: {{ $bm->barang_id }},
+                        tanggal_masuk: '{{ $bm->tanggal_masuk }}',
+                        jumlah_masuk: {{ $bm->jumlah_masuk }},
+                        deskripsi: '{{ $bm->deskripsi }}',
+                        nama_barang: '{{ $bm->barang->nama_barang }}',
+                        }"
+                                            class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm font-medium shadow-sm transition">
+                                            Edit
                                         </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center p-4 text-gray-500">Data barang belum tersedia.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+
+                                        <form id="delete-form-{{ $bm->id }}" method="POST"
+                                            action="{{ route('barang_masuk.destroy', $bm->id) }}" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" data-id="{{ $bm->id }}"
+                                                class="delete-button bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm font-medium shadow-sm transition">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center p-4 text-gray-500">Data barang belum tersedia.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 

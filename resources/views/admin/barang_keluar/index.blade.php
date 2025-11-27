@@ -7,54 +7,59 @@
             <div
                 class="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-600 to-blue-500">
                 <h4 class="text-lg font-semibold text-white">📤 Daftar Barang Keluar</h4>
-                <!-- Tombol Export Excel -->
-                <button onclick="window.location.href='{{ route('barang_keluar.export') }}'"
+                <button onclick="window.location.href='{{ route('barang_keluar.export', request()->all()) }}'"
                     style="
-    background-color:#ffffff;
-    color:#2563EB;
-    font-size:14px;
-    font-weight:600;
-    border:none;
-    border-radius:8px;
-    padding:8px 16px;
-    cursor:pointer;
-    transition:all 0.2s ease;
-    box-shadow:0 1px 3px rgba(0,0,0,0.1);
-    display:flex;
-    align-items:center;
-    gap:6px;
-  "
+                            background-color:#ffffff;
+                            color:#2563EB;
+                            font-size:14px;
+                            font-weight:600;
+                            border:none;
+                            border-radius:8px;
+                            padding:8px 16px;
+                            cursor:pointer;
+                            transition:all 0.2s ease;
+                            box-shadow:0 1px 3px rgba(0,0,0,0.1);
+                            display:flex;
+                            align-items:center;
+                            gap:6px;
+                        "
                     onmouseover="this.style.backgroundColor='#DBEAFE'" onmouseout="this.style.backgroundColor='#ffffff'">
                     📑 Export Excel
                 </button>
             </div>
-            <!-- Filter dan Pencarian -->
             <div
                 style="display:flex; justify-content:space-between; align-items:center; padding:12px 24px; background-color:#F8FEFE; border-bottom:1px solid #A1E3F9;">
                 <form action="{{ route('barang_keluar.index') }}" method="GET"
                     style="display:flex; justify-content:space-between; align-items:center; flex-wrap:nowrap; width:100%; gap:12px;">
 
-                    <!-- Bagian kiri: Filter tanggal -->
                     <div style="display:flex; align-items:center; gap:10px;">
                         <div style="display:flex; align-items:center; gap:6px;">
                             <span style="font-size:13px; color:#6B7280;">Dari</span>
                             <input type="date" name="start_date" value="{{ request('start_date') }}"
                                 style="border:1px solid #A1E3F9; border-radius:6px; padding:6px 10px; font-size:14px; color:#374151; background-color:#fff; outline:none;">
                         </div>
-
                         <div style="display:flex; align-items:center; gap:6px;">
                             <span style="font-size:13px; color:#6B7280;">Sampai</span>
                             <input type="date" name="end_date" value="{{ request('end_date') }}"
                                 style="border:1px solid #A1E3F9; border-radius:6px; padding:6px 10px; font-size:14px; color:#374151; background-color:#fff; outline:none;">
                         </div>
-
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <span style="font-size:13px; color:#6B7280;">Lokasi</span>
+                            <select name="lokawisata_id"
+                                style="border:1px solid #A1E3F9; border-radius:6px; padding:6px 10px; font-size:14px; color:#374151; background:#fff; outline:none; cursor:pointer;">
+                                <option value="">Semua Lokasi</option>
+                                @foreach ($wisatas as $w)
+                                    <option value="{{ $w->id }}" {{ request('lokawisata_id') == $w->id ? 'selected' : '' }}>
+                                        {{ $w->nama_lokawisata }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                         <button type="submit"
                             style="background-color:#33A8C7; color:#fff; border:none; border-radius:6px; padding:6px 14px; font-size:13px; cursor:pointer; transition:background-color 0.2s ease;">
                             🔍 Filter
                         </button>
                     </div>
-
-                    <!-- Bagian kanan: Pencarian dan Reset -->
                     <div style="display:flex; align-items:center; gap:10px;">
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari barang..."
                             style="border:1px solid #D1D5DB; border-radius:6px; padding:6px 10px; font-size:13px; color:#374151; outline:none; width:250px;">
@@ -69,45 +74,46 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full border-collapse text-left">
-                    <thead>
-                        <tr class="bg-blue-100 text-gray-800">
-                            <th class="p-4 text-sm font-semibold">No</th>
-                            <th class="p-4 text-sm font-semibold">Tanggal</th>
-                            <th class="p-4 text-sm font-semibold">Lokawisata</th>
-                            <th class="p-4 text-sm font-semibold">Nama Barang</th>
-                            <th class="p-4 text-sm font-semibold">Jumlah</th>
-                            <th class="p-4 text-sm font-semibold">Harga Satuan</th>
-                            <th class="p-4 text-sm font-semibold">Harga Total</th>
-                            <th class="p-4 text-sm font-semibold">Keterangan</th>
-                        </tr>
-                    </thead>
+                <div style="max-height: 70vh; overflow-y: auto;" class="rounded-b-xl">
+                    <table class="w-full border-collapse text-left">
+                        <thead>
+                            <tr class="bg-blue-100 text-gray-800">
+                                <th class="p-4 text-sm font-semibold">No</th>
+                                <th class="p-4 text-sm font-semibold">Tanggal</th>
+                                <th class="p-4 text-sm font-semibold">Lokawisata</th>
+                                <th class="p-4 text-sm font-semibold">Nama Barang</th>
+                                <th class="p-4 text-sm font-semibold">Jumlah</th>
+                                <th class="p-4 text-sm font-semibold">Harga Satuan</th>
+                                <th class="p-4 text-sm font-semibold">Harga Total</th>
+                                <th class="p-4 text-sm font-semibold">Keterangan</th>
+                            </tr>
+                        </thead>
 
-                    <tbody class="text-gray-700">
-                        @forelse ($keluars as $row)
-                            <tr class="border-b border-gray-100 hover:bg-blue-50 transition">
-                                <td class="p-4 font-semibold text-gray-700">{{ $loop->iteration }}</td>
-                                <td class="p-4">
-                                    {{ \Carbon\Carbon::parse($row->tanggal_keluar)->format('d-m-Y') }}
-                                </td>
-                                </td>
-                                <td class="p-4">{{ $row->lokawisata->nama_lokawisata }}</td>
-                                <td class="p-4">{{ $row->barang->nama_barang }}</td>
-                                <td class="p-4">{{ $row->jumlah_keluar }}</td>
-                                <td class="p-4">{{ $row->harga_satuan }}</td>
-                                <td class="p-4">{{ $row->harga_total }}</td>
-                                <td class="p-4">{{ $row->keterangan }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center p-6 text-gray-500">Belum ada data barang keluar.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        <tbody class="text-gray-700">
+                            @forelse ($keluars as $row)
+                                <tr class="border-b border-gray-100 hover:bg-blue-50 transition">
+                                    <td class="p-4 font-semibold text-gray-700">{{ $loop->iteration }}</td>
+                                    <td class="p-4">
+                                        {{ \Carbon\Carbon::parse($row->tanggal_keluar)->format('d-m-Y') }}
+                                    </td>
+                                    </td>
+                                    <td class="p-4">{{ $row->lokawisata->nama_lokawisata }}</td>
+                                    <td class="p-4">{{ $row->barang->nama_barang }}</td>
+                                    <td class="p-4">{{ $row->jumlah_keluar }}</td>
+                                    <td class="p-4">{{ $row->harga_satuan }}</td>
+                                    <td class="p-4">{{ $row->harga_total }}</td>
+                                    <td class="p-4">{{ $row->keterangan }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="text-center p-6 text-gray-500">Belum ada data barang keluar.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-        <!-- Floating Button Tambah Barang -->
         <button @click="openAdd = true"
             style="
       position:fixed;

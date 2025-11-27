@@ -49,53 +49,57 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full border-collapse text-left">
-                    <thead>
-                        <tr class="bg-blue-100 text-gray-800">
-                            <th class="p-4 text-sm font-semibold">No</th>
-                            <th class="p-4 text-sm font-semibold">Nama Barang</th>
-                            <th class="p-4 text-sm font-semibold">Jumlah</th>
-                            <th class="p-4 text-sm font-semibold">Status</th>
-                            <th class="p-4 text-sm font-semibold">Pesan</th>
-                            <th class="p-4 text-sm font-semibold text-center">Tanggal</th>
-                        </tr>
-                    </thead>
+                <div style="max-height: 70vh; overflow-y: auto;" class="rounded-b-xl">
+                    <table class="w-full border-collapse text-left">
+                        <thead class="sticky top-0 bg-blue-100 z-10">
+                            <tr class="text-gray-800">
+                                <th class="p-4 text-sm font-semibold">No</th>
+                                <th class="p-4 text-sm font-semibold">Nama Barang</th>
+                                <th class="p-4 text-sm font-semibold">Jumlah</th>
+                                <th class="p-4 text-sm font-semibold">Status</th>
+                                <th class="p-4 text-sm font-semibold">Pesan</th>
+                                <th class="p-4 text-sm font-semibold text-center">Tanggal</th>
+                            </tr>
+                        </thead>
 
-                    <tbody class="text-gray-700">
-                        @forelse ($data as $index => $item)
-                            <tr class="border-b border-gray-100 hover:bg-blue-50 transition">
-                                <td class="p-4 font-semibold text-gray-700">{{ $loop->iteration }}</td>
-                                <td class="p-4">{{ $item->nama_barang }}</td>
-                                <td class="p-4">{{ $item->jumlah }}</td>
-                                <td class="p-4 text-center">
-                        @if ($item->status === 'approved')
-                            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
-                                Disetujui
-                            </span>
-                        @elseif ($item->status === 'rejected')
-                            <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold">
-                                Ditolak
-                            </span>
-                        @else
-                            <button
-                                @click="openApproveModal({{ $item->id }}, {{ $item->jumlah }})"
-                                class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-semibold">
-                                Pending
-                            </button>
-                        @endif
-                    </td>
-                                <td class="p-4">{{ $item->pesan ?? '-' }}</td>
-                                <td class="p-4 text-center">{{ $item->created_at->format('d M Y H:i') }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="p-6 text-center text-gray-500">Belum ada riwayat permintaan.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        <tbody class="text-gray-700">
+                            @forelse ($data as $index => $item)
+                                <tr class="border-b border-gray-100 hover:bg-blue-50 transition">
+                                    <td class="p-4">{{ $loop->iteration }}</td>
+                                    <td class="p-4">{{ $item->nama_barang }}</td>
+                                    <td class="p-4">{{ $item->jumlah }}</td>
+                                    <td class="p-4 text-center">
+                                        @if ($item->status === 'approved')
+                                            <span
+                                                class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
+                                                Disetujui
+                                            </span>
+                                        @elseif ($item->status === 'rejected')
+                                            <span
+                                                class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold">
+                                                Ditolak
+                                            </span>
+                                        @else
+                                            <button @click="openApproveModal({{ $item->id }}, {{ $item->jumlah }})"
+                                                class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-semibold">
+                                                Pending
+                                            </button>
+                                        @endif
+                                    </td>
+                                    <td class="p-4">{{ $item->pesan ?? '-' }}</td>
+                                    <td class="p-4 text-center">{{ $item->created_at->format('d M Y H:i') }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="p-6 text-center text-gray-500">Belum ada riwayat permintaan.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
 
+        </div>
     </main>
 @endsection

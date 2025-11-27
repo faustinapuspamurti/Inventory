@@ -32,16 +32,17 @@ class StokBarangController extends Controller
             'jumlah_stok' => 'required|integer|min:1',
             'satuan' => 'required|string|max:255',
             'harga_satuan' => 'required|string|max:255',
-            'harga_total' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
         ]);
+        
+        $harga_total = $request->jumlah_stok * $request->harga_satuan;
 
         Barang::create([
             'nama_barang' => $request->nama_barang,
             'jumlah_stok' => $request->jumlah_stok,
             'satuan' => $request->satuan,
             'harga_satuan' => $request->harga_satuan,
-            'harga_total' => $request->harga_total,
+            'harga_total' => $harga_total,
             'deskripsi' => $request->deskripsi,
         ]);
 

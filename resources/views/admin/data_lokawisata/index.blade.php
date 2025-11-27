@@ -43,51 +43,58 @@
                         </form>
                     </div>
 
-                    <div class="border-t border-gray-200 mt-4 pt-3">
-                        <h3 class="text-sm font-semibold text-gray-700 mb-2">📦 Rekapan Barang Keluar</h3>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm text-left border-collapse">
-                                <thead>
-                                    <tr class="bg-gray-100 text-gray-700">
-                                        <th class="p-2 font-semibold">Tanggal</th>
-                                        <th class="p-2 font-semibold">Nama Barang</th>
-                                        <th class="p-2 font-semibold text-center">Jumlah</th>
-                                        <th class="p-2 font-semibold">Keterangan</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                   @php
-                                    $filtered = $barangKeluar
-                                        ->filter(fn($item) => $item->lokawisata_id === $lok->id)
-                                        ->values();
-                                    @endphp
+                    <div class="border-t border-gray-200 mt-5 pt-4">
+                        <h3 class="text-sm font-semibold text-gray-700 mb-3">
+                            📦 Rekapan Barang Keluar
+                        </h3>
 
-                                    @forelse ($filtered as $item)
-                                    <tr>
-                                        <td class="p-2">{{ $item['tanggal_keluar'] }}</td>
-                                        <td class="p-2">{{ $item->barang->nama_barang ?? '-' }}</td>
-                                        <td class="p-2 text-center">{{ $item['jumlah_keluar'] }}</td>
-                                        <td class="p-2">{{ $item['keterangan'] }}</td>
-                                    </tr>
-                                    @empty
-                                    <tr>
-                                        <td colspan="4" class="p-3 text-center text-gray-500 italic">
-                                            Belum ada data barang keluar.
-                                        </td>
-                                    </tr>
-                                    @endforelse
+                        <div class="rounded-lg border border-gray-200 overflow-hidden">
+                            <div class="max-h-56 overflow-y-auto">
+                                <table class="w-full text-sm text-left">
+                                    <thead class="bg-gray-100 text-gray-700 sticky top-0 z-[1]">
+                                        <tr>
+                                            <th class="p-3 font-semibold">Tanggal</th>
+                                            <th class="p-3 font-semibold">Nama Barang</th>
+                                            <th class="p-3 font-semibold text-center">Jumlah</th>
+                                            <th class="p-3 font-semibold">Keterangan</th>
+                                        </tr>
+                                    </thead>
 
-                                </tbody>
-                            </table>
+                                    <tbody class="divide-y divide-gray-100">
+                                        @php
+                                            $filtered = $barangKeluar
+                                                ->filter(fn($item) => $item->lokawisata_id === $lok->id)
+                                                ->values();
+                                        @endphp
+
+                                        @forelse ($filtered as $item)
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="p-3">{{ $item['tanggal_keluar'] }}</td>
+                                                <td class="p-3">{{ $item->barang->nama_barang ?? '-' }}</td>
+                                                <td class="p-3 text-center">{{ $item['jumlah_keluar'] }}</td>
+                                                <td class="p-3">{{ $item['keterangan'] }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="4" class="p-3 text-center text-gray-500 italic">
+                                                    Belum ada data barang keluar.
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
+
                 </div>
             @empty
                 <p class="text-gray-500 text-center col-span-full py-10">Belum ada data lokawisata.</p>
             @endforelse
         </div>
 
-        <div x-show="openAdd" x-cloak x-transition.opacity class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div x-show="openAdd" x-cloak x-transition.opacity
+            class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div @click.away="openAdd = false" class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Tambah Lokawisata</h2>
                 <form action="{{ route('lokawisata.store') }}" method="POST">
@@ -119,7 +126,8 @@
             </div>
         </div>
 
-        <div x-show="openEdit" x-cloak x-transition.opacity class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div x-show="openEdit" x-cloak x-transition.opacity
+            class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div @click.away="openEdit = false" class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Edit Lokawisata</h2>
                 <form :action="'/admin/lokawisata/' + editData.id" method="POST">
@@ -151,7 +159,6 @@
                 </form>
             </div>
         </div>
-
     </main>
 
     <script>

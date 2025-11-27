@@ -10,31 +10,29 @@
 
                 <button onclick="window.location.href='{{ route('barang.export') }}'"
                     style="
-          background-color:#ffffff;
-          color:#2563EB;
-          font-size:14px;
-          font-weight:600;
-          border:none;
-          border-radius:8px;
-          padding:8px 16px;
-          cursor:pointer;
-          transition:all 0.2s ease;
-          box-shadow:0 1px 3px rgba(0,0,0,0.1);
-          display:flex;
-          align-items:center;
-          gap:6px;
-        "
+                        background-color:#ffffff;
+                        color:#2563EB;
+                        font-size:14px;
+                        font-weight:600;
+                        border:none;
+                        border-radius:8px;
+                        padding:8px 16px;
+                        cursor:pointer;
+                        transition:all 0.2s ease;
+                        box-shadow:0 1px 3px rgba(0,0,0,0.1);
+                        display:flex;
+                        align-items:center;
+                        gap:6px;
+                        "
                     onmouseover="this.style.backgroundColor='#DBEAFE'" onmouseout="this.style.backgroundColor='#ffffff'">
                     📑 Export Excel
                 </button>
             </div>
-            <!-- Filter dan Pencarian -->
             <div
                 style="display:flex; justify-content:space-between; align-items:center; padding:12px 24px; background-color:#F8FEFE; border-bottom:1px solid #A1E3F9;">
                 <form action="{{ route('stok_barang.index') }}" method="GET"
                     style="display:flex; justify-content:space-between; align-items:center; flex-wrap:nowrap; width:100%; gap:12px;">
 
-                    <!-- Bagian kiri: Filter tanggal -->
                     <div style="display:flex; align-items:center; gap:10px;">
                     </div>
 
@@ -110,7 +108,6 @@
                 </table>
             </div>
         </div>
-        <!-- Floating Button Tambah Barang -->
         <button @click="openAdd = true"
             style="
       position:fixed;
@@ -134,7 +131,6 @@
 
         <div x-show="openAdd" x-cloak x-transition.opacity
             class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-
             <div @click.away="openAdd = false"
                 class="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 transform transition-all scale-100">
                 <h2 class="text-xl font-semibold mb-4 text-gray-800">Tambah Stok Barang</h2>
@@ -159,11 +155,6 @@
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">Harga Satuan</label>
                             <input type="text" name="harga_satuan" required
-                                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-sm text-gray-600 mb-1">Harga Total</label>
-                            <input type="text" name="harga_total" required
                                 class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none">
                         </div>
                         <div>
@@ -209,11 +200,6 @@
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">harga Satuan</label>
                             <input type="text" name="harga_satuan" x-model="editData.harga_satuan"
-                                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-sm text-gray-600 mb-1">harga Total</label>
-                            <input type="text" name="harga_total" x-model="editData.harga_total"
                                 class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none">
                         </div>
                         <div>

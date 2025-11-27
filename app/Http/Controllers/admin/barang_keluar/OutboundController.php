@@ -17,6 +17,7 @@ class OutboundController extends Controller
     {
         $query = Barang_keluar::with(['barang', 'lokawisata']);
 
+        // FILTER SEARCH
         if ($request->filled('search')) {
             $search = $request->search;
 
@@ -30,6 +31,12 @@ class OutboundController extends Controller
             });
         }
 
+        // 🔥 FILTER BERDASARKAN LOKAWISATA (DROPDOWN)
+        if ($request->filled('lokawisata_id')) {
+            $query->where('lokawisata_id', $request->lokawisata_id);
+        }
+
+        // FILTER TANGGAL
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $start = Carbon::parse($request->start_date)->startOfDay();
             $end = Carbon::parse($request->end_date)->endOfDay();
@@ -38,6 +45,7 @@ class OutboundController extends Controller
             $query->whereDate('tanggal_keluar', $request->start_date);
         }
 
+        // GET DATA
         $keluars = $query->orderBy('id', 'desc')->get();
 
         $barangs = Barang::all();
@@ -45,6 +53,7 @@ class OutboundController extends Controller
 
         return view('admin.barang_keluar.index', compact('keluars', 'barangs', 'wisatas'));
     }
+
 
     public function store(Request $request)
     {
@@ -58,12 +67,18 @@ class OutboundController extends Controller
 
         $barang = Barang::findOrFail($request->barang_id);
 
-        $harga_satuan = $barang->harga_satuan;
+        // 🔥 CEK STOK TERLEBIH DAHULU
+        if ($request->jumlah_keluar > $barang->jumlah_stok) {
+            return redirect()->back()
+                ->with('error', 'Jumlah yang dikeluarkan melebihi stok! Stok tersedia: ' . $barang->jumlah_stok)
+                ->withInput();
+        }
 
-        // Hitung total harga barang keluar
+        // HITUNG TOTAL HARGA
+        $harga_satuan = $barang->harga_satuan;
         $harga_total = $harga_satuan * $request->jumlah_keluar;
 
-        // Simpan ke tabel barang_keluar
+        // SIMPAN DATA BARANG KELUAR
         Barang_keluar::create([
             'barang_id' => $request->barang_id,
             'lokawisata_id' => $request->lokawisata_id,
@@ -74,12 +89,9 @@ class OutboundController extends Controller
             'keterangan' => $request->keterangan,
         ]);
 
-        // Kurangi stok barang di tabel barang
-        $barang->jumlah_stok = max(0, $barang->jumlah_stok - $request->jumlah_keluar);
-
-        // Kurangi harga total stok
+        // UPDATE STOK (pengurangan tetap menggunakan stok lama)
+        $barang->jumlah_stok -= $request->jumlah_keluar;
         $barang->harga_total = $barang->jumlah_stok * $barang->harga_satuan;
-
         $barang->save();
 
         return redirect()->route('barang_keluar.index')
@@ -101,8 +113,16 @@ class OutboundController extends Controller
         return redirect()->route('barang_keluar.index')->with('success', 'Data barang keluar dihapus dan stok diperbarui.');
     }
 
-    public function export()
+    public function export(Request $request)
     {
-        return Excel::download(new OutBarangExport, 'barang_keluar.xlsx');
+        return Excel::download(
+            new OutBarangExport(
+                $request->start_date,
+                $request->end_date,
+                $request->search,
+                $request->lokawisata_id
+            ),
+            'barang_keluar.xlsx'
+        );
     }
 }
