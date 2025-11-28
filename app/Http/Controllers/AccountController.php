@@ -25,20 +25,25 @@ class AccountController extends Controller
 
     public function index_user(Request $request)
     {
-        $query = User::with('lokawisatas')->where('role', 'user'); 
+        $query = User::with('lokawisata')->where('role', 'user'); 
 
         if ($request->filled('search')) {
-            $query->where('username', 'like', '%' . $request->search . '%')
-                ->orWhereHas('lokawisatas', function ($q) use ($request) {
-                    $q->where('nama_lokawisata', 'like', '%' . $request->search . '%');
+
+            $query->where(function ($q) use ($request) {
+                $q->where('username', 'like', '%' . $request->search . '%')
+                ->orWhereHas('lokawisata', function ($q2) use ($request) {
+                    $q2->where('nama_lokawisata', 'like', '%' . $request->search . '%');
                 });
+            });
         }
+
         $lokawisatas = Lokawisata::all();
 
         $users = $query->orderBy('id', 'asc')->get();
 
         return view('admin.account.user', compact('users', 'lokawisatas'));
     }
+
 
     public function store_admin(Request $request)
     {
@@ -90,8 +95,8 @@ class AccountController extends Controller
             'role' => 'user',
         ]);
 
-        $user->lokawisatas()->attach($request->lokawisata_id);
-
+        $user->lokawisata_id = $request->lokawisata_id;
+        $user->save();
         return redirect()->route('accounts.user')->with('success', 'User berhasil ditambahkan!');
     }
 
@@ -102,7 +107,7 @@ class AccountController extends Controller
         $request->validate([
             'username' => 'required|string|max:255|unique:users,username,' . $user->id,
             'password' => 'nullable|string|min:6|confirmed',
-            'lokawisata_id' => 'exists:lokawisata,id',
+            'lokawisata_id' => 'nullable|exists:lokawisata,id',
         ]);
 
         $user->username = $request->username;
@@ -111,11 +116,10 @@ class AccountController extends Controller
             $user->password = bcrypt($request->password);
         }
 
-        $user->save();
+        // Set relasi
+        $user->lokawisata_id = $request->lokawisata_id;
 
-        if ($request->filled('lokawisata_id')) {
-            $user->lokawisatas()->sync($request->lokawisata_id);
-        }
+        $user->save();
 
         return redirect()->route('accounts.user')->with('success', 'User berhasil diperbarui!');
     }

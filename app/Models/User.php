@@ -22,12 +22,13 @@ class User extends Authenticatable
         'username',
         'password',
         'role',
+        'lokawisata_id',
         'show_password',
     ];
 
-    public function lokawisatas()
+    public function lokawisata()
     {
-        return $this->belongsToMany(Lokawisata::class, 'lokawisata_user', 'user_id', 'lokawisata_id');
+        return $this->belongsTo(Lokawisata::class);
     }
 
     /**

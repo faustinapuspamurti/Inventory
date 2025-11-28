@@ -6,12 +6,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Notifikasi;
 use App\Models\Barang;
+use App\Models\Lokawisata;
 
 class RequestController extends Controller
 {
    public function index(Request $request)
     {
-        $lokawisata = auth()->user()->lokawisatas()->first();
+        $lokawisata = Lokawisata::find(auth()->user()->lokawisata_id);
 
         if (!$lokawisata) {
             $data = collect([]);

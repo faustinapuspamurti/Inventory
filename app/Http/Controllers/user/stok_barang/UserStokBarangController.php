@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Barang;
 use App\Models\Notifikasi;
+use App\Models\Lokawisata;
 
 class UserStokBarangController extends Controller
 {
@@ -32,7 +33,7 @@ class UserStokBarangController extends Controller
         ]);
 
         $barang = Barang::findOrFail($request->barang_id);
-        $lokawisata = auth()->user()->lokawisatas()->first();
+        $lokawisata = Lokawisata::find(auth()->user()->lokawisata_id);
 
         Notifikasi::create([
             'barang_id' => $barang->id,

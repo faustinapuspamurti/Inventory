@@ -34,13 +34,6 @@ class UserDashboardController extends Controller
         }
 
         $totalMingguIni = array_sum($chartMingguan);
-dd([
-    'lokasi_user' => $lokasiId,
-    'start' => $start,
-    'end' => $end,
-    'query_data' => $dataMingguan,
-    'asli_tabel' => Barang_keluar::where('lokawisata_id', $lokasiId)->get(),
-]);
         return view('user.dashboard', compact('chartMingguan', 'totalMingguIni'));
     }
 

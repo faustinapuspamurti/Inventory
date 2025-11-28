@@ -5,16 +5,17 @@ namespace App\Http\Controllers\user\notification;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Notifikasi;
+use App\Models\Lokawisata;
 
 class NotifController extends Controller
 {
     public function index(Request $request)
     {
-        $lokawisata = auth()->user()->lokawisatas()->first();
+        $lokawisata = Lokawisata::find(auth()->user()->lokawisata_id);
 
         if (!$lokawisata) {
             $data = collect([]);
-            return view('user.notification.index', compact('data'));
+            return view('user.request.index', compact('data'));
         }
 
         $query = Notifikasi::query()
