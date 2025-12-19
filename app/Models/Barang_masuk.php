@@ -15,6 +15,7 @@ class Barang_masuk extends Model
         'jumlah_masuk',
         'tanggal_masuk',
         'deskripsi',
+        'evidence',
     ];
 
     public function barang()

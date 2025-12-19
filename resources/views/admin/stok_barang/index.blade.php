@@ -76,7 +76,9 @@
                     <tbody class="text-gray-700">
                         @forelse ($stoks as $st)
                             <tr class="border-b border-gray-100 hover:bg-blue-50 transition">
-                                <td class="p-4 font-semibold text-gray-700">{{ $loop->iteration }}</td>
+                                <td class="p-4 font-semibold text-gray-700">
+                                    {{ ($stoks->currentPage() - 1) * $stoks->perPage() + $loop->iteration }}
+                                </td>
                                 <td class="p-4">{{ $st->nama_barang }}</td>
                                 <td class="p-4">{{ $st->jumlah_stok }}</td>
                                 <td class="p-4">{{ $st->satuan }}</td>
@@ -106,6 +108,76 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+        </div>
+        @php
+            $perPage = $stoks->perPage();
+            $currentPage = $stoks->currentPage();
+            $lastPage = $stoks->lastPage();
+            $total = $stoks->total();
+            $from = $total ? $perPage * ($currentPage - 1) + 1 : 0;
+            $to = $total ? min($perPage * $currentPage, $total) : 0;
+            $queryParams = request()->only(['search']);
+            $baseQuery = array_merge($queryParams, ['per_page' => $perPage]);
+        @endphp
+        <div class="mt-4 px-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm space-y-3">
+            <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <form method="GET" action="{{ route('stok_barang.index') }}" class="flex items-center gap-2 text-sm">
+                    @foreach ($queryParams as $key => $value)
+                        @if (!is_null($value))
+                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                        @endif
+                    @endforeach
+                    <label for="per_page" class="text-gray-700">Tampilkan</label>
+                    <select id="per_page" name="per_page"
+                        class="border rounded px-2 py-1 text-sm focus:ring-blue-400 focus:border-blue-400"
+                        onchange="this.form.submit()">
+                        @foreach ($perPageOptions as $option)
+                            <option value="{{ $option }}" {{ $perPage === $option ? 'selected' : '' }}>
+                                {{ $option }} per halaman
+                            </option>
+                        @endforeach
+                    </select>
+                    <span class="text-gray-700">item</span>
+                </form>
+
+                <div class="flex flex-wrap items-center gap-3 text-sm text-gray-700">
+                    <span>Menampilkan {{ $from }}-{{ $to }} dari {{ $total }}</span>
+                    <div class="flex items-center gap-2">
+                        @php
+                            $prevPage = $currentPage > 1 ? $currentPage - 1 : 1;
+                            $nextPage = $currentPage < $lastPage ? $currentPage + 1 : $lastPage;
+                        @endphp
+                        <a href="{{ $currentPage === 1 ? '#' : request()->fullUrlWithQuery(array_merge($baseQuery, ['page' => 1])) }}"
+                            class="px-2 py-1 border rounded {{ $currentPage === 1 ? 'text-gray-400 cursor-not-allowed bg-gray-100' : 'text-blue-600 hover:bg-blue-50' }}"
+                            aria-disabled="{{ $currentPage === 1 ? 'true' : 'false' }}"><< Pertama</a>
+                        <a href="{{ $currentPage === 1 ? '#' : request()->fullUrlWithQuery(array_merge($baseQuery, ['page' => $prevPage])) }}"
+                            class="px-2 py-1 border rounded {{ $currentPage === 1 ? 'text-gray-400 cursor-not-allowed bg-gray-100' : 'text-blue-600 hover:bg-blue-50' }}"
+                            aria-disabled="{{ $currentPage === 1 ? 'true' : 'false' }}">< Sebelumnya</a>
+                        <form method="GET" action="{{ route('stok_barang.index') }}"
+                            class="flex items-center gap-2">
+                            @foreach ($queryParams as $key => $value)
+                                @if (!is_null($value))
+                                    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                                @endif
+                            @endforeach
+                            <input type="hidden" name="per_page" value="{{ $perPage }}">
+                            <label for="page" class="text-gray-700">Halaman</label>
+                            <input id="page" name="page" type="number" min="1" max="{{ $lastPage }}"
+                                value="{{ $currentPage }}"
+                                class="w-16 border rounded px-2 py-1 text-sm focus:ring-blue-400 focus:border-blue-400">
+                            <span class="text-gray-600">/ {{ $lastPage }}</span>
+                            <button type="submit"
+                                class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-500 text-sm">Pergi</button>
+                        </form>
+                        <a href="{{ $currentPage === $lastPage ? '#' : request()->fullUrlWithQuery(array_merge($baseQuery, ['page' => $nextPage])) }}"
+                            class="px-2 py-1 border rounded {{ $currentPage === $lastPage ? 'text-gray-400 cursor-not-allowed bg-gray-100' : 'text-blue-600 hover:bg-blue-50' }}"
+                            aria-disabled="{{ $currentPage === $lastPage ? 'true' : 'false' }}">Berikutnya ></a>
+                        <a href="{{ $currentPage === $lastPage ? '#' : request()->fullUrlWithQuery(array_merge($baseQuery, ['page' => $lastPage])) }}"
+                            class="px-2 py-1 border rounded {{ $currentPage === $lastPage ? 'text-gray-400 cursor-not-allowed bg-gray-100' : 'text-blue-600 hover:bg-blue-50' }}"
+                            aria-disabled="{{ $currentPage === $lastPage ? 'true' : 'false' }}">Terakhir >></a>
+                    </div>
+                </div>
             </div>
         </div>
         <button @click="openAdd = true"

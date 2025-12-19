@@ -13,6 +13,9 @@ class StokBarangController extends Controller
     public function index(Request $request){
 
         $query = Barang::query();
+        $perPageOptions = [10, 25, 50, 100, 250];
+        $perPage = $request->integer('per_page', 10);
+        $perPage = in_array($perPage, $perPageOptions) ? $perPage : 10;
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -20,9 +23,12 @@ class StokBarangController extends Controller
                 ->orWhere('deskripsi', 'like', '%' . $search . '%');
         }
 
-        $stoks = $query->orderBy('id', 'desc')->get();
+        $stoks = $query
+            ->orderBy('id', 'desc')
+            ->paginate($perPage)
+            ->withQueryString();
 
-        return view('admin.stok_barang.index', compact('stoks'));
+        return view('admin.stok_barang.index', compact('stoks', 'perPageOptions'));
     }
 
     public function store(Request $request)

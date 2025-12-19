@@ -20,6 +20,7 @@ class Barang_keluar extends Model
         'harga_total',
         'lokawisata_id',
         'keterangan',
+        'evidence',
     ];
 
     public function barang()

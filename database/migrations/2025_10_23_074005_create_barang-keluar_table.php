@@ -20,6 +20,7 @@ return new class extends Migration
         $table->string('harga_total');
         $table->foreignId('lokawisata_id')->constrained('lokawisata')->onDelete('cascade');
         $table->text('keterangan')->nullable();
+        $table->string('evidence')->nullable();
         $table->timestamps();
         });
     }

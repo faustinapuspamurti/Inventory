@@ -1,7 +1,8 @@
 @extends('layouts.admin')
 
 @section('content')
-    <main class="p-6 bg-gray-50 min-h-screen flex-1" x-data="{ openAdd: false }">
+    <main class="p-6 bg-gray-50 min-h-screen flex-1"
+        x-data="{ openAdd: {{ $errors->any() ? 'true' : 'false' }} }">
 
         <div class="bg-white shadow-lg rounded-2xl overflow-hidden">
             <div
@@ -86,13 +87,16 @@
                                 <th class="p-4 text-sm font-semibold">Harga Satuan</th>
                                 <th class="p-4 text-sm font-semibold">Harga Total</th>
                                 <th class="p-4 text-sm font-semibold">Keterangan</th>
+                                <th class="p-4 text-sm font-semibold">Bukti</th>
                             </tr>
                         </thead>
 
                         <tbody class="text-gray-700">
                             @forelse ($keluars as $row)
                                 <tr class="border-b border-gray-100 hover:bg-blue-50 transition">
-                                    <td class="p-4 font-semibold text-gray-700">{{ $loop->iteration }}</td>
+                                    <td class="p-4 font-semibold text-gray-700">
+                                        {{ ($keluars->currentPage() - 1) * $keluars->perPage() + $loop->iteration }}
+                                    </td>
                                     <td class="p-4">
                                         {{ \Carbon\Carbon::parse($row->tanggal_keluar)->format('d-m-Y') }}
                                     </td>
@@ -103,6 +107,14 @@
                                     <td class="p-4">{{ $row->harga_satuan }}</td>
                                     <td class="p-4">{{ $row->harga_total }}</td>
                                     <td class="p-4">{{ $row->keterangan }}</td>
+                                    <td class="p-4">
+                                        @if ($row->evidence)
+                                            <a href="{{ Storage::url($row->evidence) }}" target="_blank"
+                                                class="text-blue-600 hover:underline">Lihat Bukti</a>
+                                        @else
+                                            <span class="text-gray-500">Tidak ada bukti</span>
+                                        @endif
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
@@ -111,6 +123,76 @@
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+        @php
+            $perPage = $keluars->perPage();
+            $currentPage = $keluars->currentPage();
+            $lastPage = $keluars->lastPage();
+            $total = $keluars->total();
+            $from = $total ? ($perPage * ($currentPage - 1) + 1) : 0;
+            $to = $total ? min($perPage * $currentPage, $total) : 0;
+            $queryParams = request()->only(['search', 'start_date', 'end_date', 'lokawisata_id']);
+            $baseQuery = array_merge($queryParams, ['per_page' => $perPage]);
+        @endphp
+        <div class="mt-4 px-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm space-y-3">
+            <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <form method="GET" action="{{ route('barang_keluar.index') }}" class="flex items-center gap-2 text-sm">
+                    @foreach ($queryParams as $key => $value)
+                        @if (!is_null($value))
+                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                        @endif
+                    @endforeach
+                    <label for="per_page" class="text-gray-700">Tampilkan</label>
+                    <select id="per_page" name="per_page"
+                        class="border rounded px-2 py-1 text-sm focus:ring-blue-400 focus:border-blue-400"
+                        onchange="this.form.submit()">
+                        @foreach ($perPageOptions as $option)
+                            <option value="{{ $option }}" {{ $perPage === $option ? 'selected' : '' }}>
+                                {{ $option }} per halaman
+                            </option>
+                        @endforeach
+                    </select>
+                    <span class="text-gray-700">item</span>
+                </form>
+
+                <div class="flex flex-wrap items-center gap-3 text-sm text-gray-700">
+                    <span>Menampilkan {{ $from }}-{{ $to }} dari {{ $total }}</span>
+                    <div class="flex items-center gap-2">
+                        @php
+                            $prevPage = $currentPage > 1 ? $currentPage - 1 : 1;
+                            $nextPage = $currentPage < $lastPage ? $currentPage + 1 : $lastPage;
+                        @endphp
+                        <a href="{{ $currentPage === 1 ? '#' : request()->fullUrlWithQuery(array_merge($baseQuery, ['page' => 1])) }}"
+                            class="px-2 py-1 border rounded {{ $currentPage === 1 ? 'text-gray-400 cursor-not-allowed bg-gray-100' : 'text-blue-600 hover:bg-blue-50' }}"
+                            aria-disabled="{{ $currentPage === 1 ? 'true' : 'false' }}"><< Pertama</a>
+                        <a href="{{ $currentPage === 1 ? '#' : request()->fullUrlWithQuery(array_merge($baseQuery, ['page' => $prevPage])) }}"
+                            class="px-2 py-1 border rounded {{ $currentPage === 1 ? 'text-gray-400 cursor-not-allowed bg-gray-100' : 'text-blue-600 hover:bg-blue-50' }}"
+                            aria-disabled="{{ $currentPage === 1 ? 'true' : 'false' }}">< Sebelumnya</a>
+                        <form method="GET" action="{{ route('barang_keluar.index') }}"
+                            class="flex items-center gap-2">
+                            @foreach ($queryParams as $key => $value)
+                                @if (!is_null($value))
+                                    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                                @endif
+                            @endforeach
+                            <input type="hidden" name="per_page" value="{{ $perPage }}">
+                            <label for="page" class="text-gray-700">Halaman</label>
+                            <input id="page" name="page" type="number" min="1" max="{{ $lastPage }}"
+                                value="{{ $currentPage }}"
+                                class="w-16 border rounded px-2 py-1 text-sm focus:ring-blue-400 focus:border-blue-400">
+                            <span class="text-gray-600">/ {{ $lastPage }}</span>
+                            <button type="submit"
+                                class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-500 text-sm">Pergi</button>
+                        </form>
+                        <a href="{{ $currentPage === $lastPage ? '#' : request()->fullUrlWithQuery(array_merge($baseQuery, ['page' => $nextPage])) }}"
+                            class="px-2 py-1 border rounded {{ $currentPage === $lastPage ? 'text-gray-400 cursor-not-allowed bg-gray-100' : 'text-blue-600 hover:bg-blue-50' }}"
+                            aria-disabled="{{ $currentPage === $lastPage ? 'true' : 'false' }}">Berikutnya ></a>
+                        <a href="{{ $currentPage === $lastPage ? '#' : request()->fullUrlWithQuery(array_merge($baseQuery, ['page' => $lastPage])) }}"
+                            class="px-2 py-1 border rounded {{ $currentPage === $lastPage ? 'text-gray-400 cursor-not-allowed bg-gray-100' : 'text-blue-600 hover:bg-blue-50' }}"
+                            aria-disabled="{{ $currentPage === $lastPage ? 'true' : 'false' }}">Terakhir >></a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -140,12 +222,12 @@
             <div @click.away="openAdd = false"
                 class="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 transform transition-all scale-100">
                 <h2 class="text-xl font-semibold mb-4 text-gray-800">Tambah Barang Keluar</h2>
-                <form action="{{ route('barang_keluar.store') }}" method="POST">
+                <form action="{{ route('barang_keluar.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">Tanggal</label>
-                            <input type="date" name="tanggal_keluar"
+                            <input type="date" name="tanggal_keluar" value="{{ old('tanggal_keluar') }}"
                                 class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
                                 required>
                         </div>
@@ -157,7 +239,8 @@
                                 required>
                                 <option value="">-- Pilih Lokawisata --</option>
                                 @foreach ($wisatas as $lok)
-                                    <option value="{{ $lok->id }}">{{ $lok->nama_lokawisata }}</option>
+                                    <option value="{{ $lok->id }}" {{ old('lokawisata_id') == $lok->id ? 'selected' : '' }}>
+                                        {{ $lok->nama_lokawisata }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -169,14 +252,15 @@
                                 required>
                                 <option value="">-- Pilih Barang --</option>
                                 @foreach ($barangs as $b)
-                                    <option value="{{ $b->id }}">{{ $b->nama_barang }}</option>
+                                    <option value="{{ $b->id }}" {{ old('barang_id') == $b->id ? 'selected' : '' }}>
+                                        {{ $b->nama_barang }}</option>
                                 @endforeach
                             </select>
                         </div>
 
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">Jumlah</label>
-                            <input type="number" name="jumlah_keluar" min="1"
+                            <input type="number" name="jumlah_keluar" min="1" value="{{ old('jumlah_keluar') }}"
                                 class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
                                 required>
                         </div>
@@ -184,7 +268,17 @@
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">Keterangan</label>
                             <textarea name="keterangan" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
-                                required></textarea>
+                                required>{{ old('keterangan') }}</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">Bukti (opsional)</label>
+                            <input type="file" name="evidence"
+                                class="w-full border rounded-lg px-3 py-2
+                                @error('evidence') border-red-500 @enderror">
+
+                            @error('evidence')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
@@ -222,6 +316,19 @@
                     });
                 });
             });
+
+            @if ($errors->any())
+                const root = document.querySelector('[x-data]');
+                if (root && root.__x) {
+                    root.__x.$data.openAdd = true;
+                }
+                Swal.fire({
+                    title: "Gagal!",
+                    text: @json(implode("\n", $errors->all())),
+                    icon: "error",
+                    confirmButtonColor: "#d33"
+                });
+            @endif
         });
 
         window.addEventListener('pageshow', function(event) {

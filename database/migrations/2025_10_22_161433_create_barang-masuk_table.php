@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('jumlah_masuk');
             $table->date('tanggal_masuk');
             $table->text('deskripsi')->nullable();
+            $table->string('evidence')->nullable();
             $table->timestamps();
         });
     }

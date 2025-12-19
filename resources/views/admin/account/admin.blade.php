@@ -166,7 +166,6 @@
                 });
             });
 
-            // SweetAlert untuk pesan sukses/gagal
             window.addEventListener('pageshow', function() {
                 @if (session('error'))
                     Swal.fire({
