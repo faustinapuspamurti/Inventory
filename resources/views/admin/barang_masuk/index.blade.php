@@ -1,8 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-    <main class="p-6 bg-gray-50 min-h-screen flex-1"
-        x-data="{ openAdd: {{ $errors->any() ? 'true' : 'false' }}, openEdit: false, editData: {} }">
+    <main class="p-6 bg-gray-50 min-h-screen flex-1" x-data="{ openAdd: {{ $errors->any() ? 'true' : 'false' }}, openEdit: false, editData: {} }">
 
         <div class="bg-white shadow-lg rounded-2xl overflow-hidden">
             <div
@@ -65,6 +64,46 @@
 
                 </form>
             </div>
+            @php
+                $perPage = $barangMasuk->perPage();
+                $currentPage = $barangMasuk->currentPage();
+                $lastPage = $barangMasuk->lastPage();
+                $total = $barangMasuk->total();
+
+                $from = $total ? $perPage * ($currentPage - 1) + 1 : 0;
+                $to = $total ? min($perPage * $currentPage, $total) : 0;
+
+                // hanya param yang relevan
+                $queryParams = request()->only(['search', 'start_date', 'end_date']);
+            @endphp
+
+            <div class="flex items-center justify-between px-6 py-4 bg-[#F8FEFE] border-b border-[#A1E3F9]">
+
+                <!-- KIRI : PER PAGE -->
+                <form method="GET" action="{{ route('barang_masuk.index') }}"
+                    class="flex items-center gap-2 text-sm text-gray-700">
+
+                    @foreach ($queryParams as $key => $value)
+                        @if (!is_null($value))
+                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                        @endif
+                    @endforeach
+
+                    <span>Tampilkan</span>
+
+                    <select name="per_page" class="rounded-lg border-gray-300 px-3 py-1.5" onchange="this.form.submit()">
+                        @foreach ($perPageOptions as $option)
+                            <option value="{{ $option }}" {{ (int) $perPage === (int) $option ? 'selected' : '' }}>
+                                {{ $option }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    <span>Barang</span>
+                </form>
+
+            </div>
+
 
             <div class="overflow-x-auto">
                 <div style="max-height: 70vh; overflow-y: auto;" class="rounded-b-xl">
@@ -88,7 +127,8 @@
                                     <td class="p-4 font-semibold text-gray-700">
                                         {{ ($barangMasuk->currentPage() - 1) * $barangMasuk->perPage() + $loop->iteration }}
                                     </td>
-                                    <td class="p-4">{{ \Carbon\Carbon::parse($bm->tanggal_masuk)->format('d-m-Y') }}</td>
+                                    <td class="p-4">{{ \Carbon\Carbon::parse($bm->tanggal_masuk)->format('d-m-Y') }}
+                                    </td>
                                     <td class="p-4">{{ $bm->barang->nama_barang }}</td>
                                     <td class="p-4">{{ $bm->jumlah_masuk }}</td>
                                     <td class="p-4">{{ $bm->deskripsi }}</td>
@@ -130,7 +170,8 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center p-4 text-gray-500">Data barang belum tersedia.</td>
+                                    <td colspan="6" class="text-center p-4 text-gray-500">Data barang belum tersedia.
+                                    </td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -139,73 +180,66 @@
             </div>
         </div>
         @php
-            $perPage = $barangMasuk->perPage();
             $currentPage = $barangMasuk->currentPage();
             $lastPage = $barangMasuk->lastPage();
-            $total = $barangMasuk->total();
-            $from = $total ? $perPage * ($currentPage - 1) + 1 : 0;
-            $to = $total ? min($perPage * $currentPage, $total) : 0;
-            $queryParams = request()->only(['search', 'start_date', 'end_date']);
-            $baseQuery = array_merge($queryParams, ['per_page' => $perPage]);
         @endphp
-        <div class="mt-4 px-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm space-y-3">
-            <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <form method="GET" action="{{ route('barang_masuk.index') }}" class="flex items-center gap-2 text-sm">
-                    @foreach ($queryParams as $key => $value)
-                        @if (!is_null($value))
-                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                        @endif
-                    @endforeach
-                    <label for="per_page" class="text-gray-700">Tampilkan</label>
-                    <select id="per_page" name="per_page"
-                        class="border rounded px-2 py-1 text-sm focus:ring-blue-400 focus:border-blue-400"
-                        onchange="this.form.submit()">
-                        @foreach ($perPageOptions as $option)
-                            <option value="{{ $option }}" {{ $perPage === $option ? 'selected' : '' }}>
-                                {{ $option }} per halaman
-                            </option>
-                        @endforeach
-                    </select>
-                    <span class="text-gray-700">item</span>
-                </form>
 
-                <div class="flex flex-wrap items-center gap-3 text-sm text-gray-700">
-                    <span>Menampilkan {{ $from }}-{{ $to }} dari {{ $total }}</span>
-                    <div class="flex items-center gap-2">
-                        @php
-                            $prevPage = $currentPage > 1 ? $currentPage - 1 : 1;
-                            $nextPage = $currentPage < $lastPage ? $currentPage + 1 : $lastPage;
-                        @endphp
-                        <a href="{{ $currentPage === 1 ? '#' : request()->fullUrlWithQuery(array_merge($baseQuery, ['page' => 1])) }}"
-                            class="px-2 py-1 border rounded {{ $currentPage === 1 ? 'text-gray-400 cursor-not-allowed bg-gray-100' : 'text-blue-600 hover:bg-blue-50' }}"
-                            aria-disabled="{{ $currentPage === 1 ? 'true' : 'false' }}"><< Pertama</a>
-                        <a href="{{ $currentPage === 1 ? '#' : request()->fullUrlWithQuery(array_merge($baseQuery, ['page' => $prevPage])) }}"
-                            class="px-2 py-1 border rounded {{ $currentPage === 1 ? 'text-gray-400 cursor-not-allowed bg-gray-100' : 'text-blue-600 hover:bg-blue-50' }}"
-                            aria-disabled="{{ $currentPage === 1 ? 'true' : 'false' }}">< Sebelumnya</a>
-                        <form method="GET" action="{{ route('barang_masuk.index') }}"
-                            class="flex items-center gap-2">
-                            @foreach ($queryParams as $key => $value)
-                                @if (!is_null($value))
-                                    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                                @endif
-                            @endforeach
-                            <input type="hidden" name="per_page" value="{{ $perPage }}">
-                            <label for="page" class="text-gray-700">Halaman</label>
-                            <input id="page" name="page" type="number" min="1" max="{{ $lastPage }}"
-                                value="{{ $currentPage }}"
-                                class="w-16 border rounded px-2 py-1 text-sm focus:ring-blue-400 focus:border-blue-400">
-                            <span class="text-gray-600">/ {{ $lastPage }}</span>
-                            <button type="submit"
-                                class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-500 text-sm">Pergi</button>
-                        </form>
-                        <a href="{{ $currentPage === $lastPage ? '#' : request()->fullUrlWithQuery(array_merge($baseQuery, ['page' => $nextPage])) }}"
-                            class="px-2 py-1 border rounded {{ $currentPage === $lastPage ? 'text-gray-400 cursor-not-allowed bg-gray-100' : 'text-blue-600 hover:bg-blue-50' }}"
-                            aria-disabled="{{ $currentPage === $lastPage ? 'true' : 'false' }}">Berikutnya ></a>
-                        <a href="{{ $currentPage === $lastPage ? '#' : request()->fullUrlWithQuery(array_merge($baseQuery, ['page' => $lastPage])) }}"
-                            class="px-2 py-1 border rounded {{ $currentPage === $lastPage ? 'text-gray-400 cursor-not-allowed bg-gray-100' : 'text-blue-600 hover:bg-blue-50' }}"
-                            aria-disabled="{{ $currentPage === $lastPage ? 'true' : 'false' }}">Terakhir >></a>
-                    </div>
-                </div>
+        <div class="mt-6 flex justify-center">
+            <div class="flex items-center gap-2">
+
+                <!-- PREV -->
+                <a href="{{ $barangMasuk->onFirstPage() ? '#' : $barangMasuk->previousPageUrl() }}"
+                    class="flex h-9 w-9 items-center justify-center rounded-full border
+            {{ $barangMasuk->onFirstPage()
+                ? 'cursor-not-allowed text-gray-400 border-gray-300'
+                : 'hover:bg-blue-100 text-gray-600 border-gray-300' }}">
+                    ‹
+                </a>
+
+                @php
+                    $start = max(1, $currentPage - 2);
+                    $end = min($lastPage, $currentPage + 2);
+                @endphp
+
+                @if ($start > 1)
+                    <a href="{{ $barangMasuk->url(1) }}"
+                        class="flex h-9 w-9 items-center justify-center rounded-full border border-gray-300 hover:bg-blue-100">
+                        1
+                    </a>
+                    @if ($start > 2)
+                        <span class="px-1 text-gray-400">…</span>
+                    @endif
+                @endif
+
+                @for ($page = $start; $page <= $end; $page++)
+                    <a href="{{ $barangMasuk->url($page) }}"
+                        class="flex h-9 w-9 items-center justify-center rounded-full border
+                {{ $page == $currentPage
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'border-gray-300 hover:bg-blue-100 text-gray-600' }}">
+                        {{ $page }}
+                    </a>
+                @endfor
+
+                @if ($end < $lastPage)
+                    @if ($end < $lastPage - 1)
+                        <span class="px-1 text-gray-400">…</span>
+                    @endif
+                    <a href="{{ $barangMasuk->url($lastPage) }}"
+                        class="flex h-9 w-9 items-center justify-center rounded-full border border-gray-300 hover:bg-blue-100">
+                        {{ $lastPage }}
+                    </a>
+                @endif
+
+                <!-- NEXT -->
+                <a href="{{ $barangMasuk->hasMorePages() ? $barangMasuk->nextPageUrl() : '#' }}"
+                    class="flex h-9 w-9 items-center justify-center rounded-full border
+            {{ $barangMasuk->hasMorePages()
+                ? 'hover:bg-blue-100 text-gray-600 border-gray-300'
+                : 'cursor-not-allowed text-gray-400 border-gray-300' }}">
+                    ›
+                </a>
+
             </div>
         </div>
 
@@ -249,20 +283,21 @@
                                 class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none">
                                 <option value="">-- Pilih Barang --</option>
                                 @foreach ($stoks as $st)
-                                    <option value="{{ $st->id }}" {{ old('barang_id') == $st->id ? 'selected' : '' }}>
+                                    <option value="{{ $st->id }}"
+                                        {{ old('barang_id') == $st->id ? 'selected' : '' }}>
                                         {{ $st->nama_barang }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">Jumlah</label>
-                            <input type="number" name="jumlah_masuk" min="1" value="{{ old('jumlah_masuk') }}" required
+                            <input type="number" name="jumlah_masuk" min="1" value="{{ old('jumlah_masuk') }}"
+                                required
                                 class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none">
                         </div>
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">Deskripsi</label>
-                            <textarea name="deskripsi"
-                                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none">{{ old('deskripsi') }}</textarea>
+                            <textarea name="deskripsi" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none">{{ old('deskripsi') }}</textarea>
                         </div>
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">Bukti (opsional)</label>
