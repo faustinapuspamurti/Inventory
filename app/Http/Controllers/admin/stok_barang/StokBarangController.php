@@ -10,7 +10,8 @@ use App\Exports\StokBarangExport;
 
 class StokBarangController extends Controller
 {
-    public function index(Request $request){
+    public function index(Request $request)
+    {
 
         $query = Barang::query();
         $perPageOptions = [10, 25, 50, 100, 250];
@@ -40,7 +41,7 @@ class StokBarangController extends Controller
             'harga_satuan' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
         ]);
-        
+
         $harga_total = $request->jumlah_stok * $request->harga_satuan;
 
         Barang::create([
@@ -68,6 +69,8 @@ class StokBarangController extends Controller
         $request->validate([
             'nama_barang' => 'required|string|max:255',
             'jumlah_stok' => 'required|integer|min:1',
+            'satuan' => 'required|string|max:255',
+            'harga_satuan' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
         ]);
 
@@ -76,14 +79,15 @@ class StokBarangController extends Controller
         $stok->nama_barang = $request->nama_barang;
         $stok->jumlah_stok = $request->jumlah_stok;
         $stok->deskripsi = $request->deskripsi;
+        $stok->satuan = $request->satuan;
+        $stok->harga_satuan = $request->harga_satuan;
 
         $stok->harga_total = $stok->jumlah_stok * $stok->harga_satuan;
 
         $stok->save();
 
-        return redirect()->route('stok_barang.index')->with('success', 'Stok barang berhasil diperbarui dan harga total diperbarui');
+        return redirect()->route('stok_barang.index')->with('success', 'Data berhasil di perbarui');
     }
-
 
     public function export()
     {
